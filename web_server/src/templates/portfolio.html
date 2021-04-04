@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="refresh" content="60">
+        <title>Portfolio Overview</title>
+        <link href="{{ url_for('static', filename='/stylesheets/minimal-table.css') }}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <h1>Portfolio Overview</h1>
+        <table>
+            <thead>
+                <tr>
+                    {% for col in cols %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% for el, col_type in zip(row, col_type) %}
+                        {% if col_type == 'row_header' %}
+                            <th scope="row">{{ el }}</th>
+                        {% elif col_type == 'usd' %}
+                            <td class="usd">{{ el }}</td>
+                        {% elif col_type == 'int' %}
+                            <td class="int">{{ el }}</td>
+                        {% else %}
+                            <td>{{ el }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th scope="row" colspan="3">Cash</th>
+                    <td class="usd">{{ cash }}</td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="3">Total</th>
+                    <td class="usd">{{ total }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" value="Update portfolio">
+        <script>
+            var usd_formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 2
+            });
+            var int_formatter = new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 0
+            });
+
+            var usds = document.getElementsByClassName("usd");
+            for (var i = 0; i < usds.length; i++) {
+                var amount = parseFloat(usds.item(i).innerText);
+                usds.item(i).innerText = usd_formatter.format(amount)
+            }
+            var ints = document.getElementsByClassName("int");
+            for (var i = 0; i < ints.length; i++) {
+                var amount = parseFloat(ints.item(i).innerText);
+                ints.item(i).innerText = int_formatter.format(amount)
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,4 @@
+mysql-connector-python==8.0.23
+pandas==1.2.3
+finance-datareader==0.9.31
+beautifulsoup4==4.9.3

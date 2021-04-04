@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  web_server:
+    image: python:3.8
+    command: sh -c "pip install -r requirements.txt && flask run --host=0.0.0.0"
+    ports:
+      - 5000:5000
+    working_dir: /app
+    volumes:
+      - ./web_server:/app
+    environment:
+      FLASK_APP: ./src/server.py
+      FLASK_ENV: development
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: financial_data
+
+  mysql:
+    image: mysql:8.0.23
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: financial_data
+
+  database_manager:
+    image: python:3.8
+    command: sh -c "pip install -r requirements.txt && python src/main.py"
+    working_dir: /app
+    volumes:
+      - ./database_manager:/app
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: financial_data
+    
+
+volumes:
+  todo-mysql-data:
