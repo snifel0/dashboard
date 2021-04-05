@@ -1,4 +1,5 @@
 import os
+import asyncio
 import mysql.connector
 from mysql.connector import errorcode
 from mysql.connector.errors import Error
@@ -25,7 +26,7 @@ TABLES['tickers'] = (
 )
 
 
-def get_last_price(ticker: str):
+async def get_last_price(ticker: str):
     end_date = datetime.today()
     start_date = end_date - relativedelta(days=7)
     try:
@@ -40,6 +41,26 @@ def get_last_price(ticker: str):
     preview_price = data['Close'][-2]
     time = data.index[0]
     return price, time, preview_price
+
+
+async def price_updater(name: int, ticker_q: asyncio.Queue) -> None:
+    update_price = (
+        "UPDATE tickers SET "
+        "   last_price = %s, "
+        "   ts = TIME(NOW()) "
+        "WHERE ticker = %s"
+    )
+    cnx = get_db_connection()
+    while True:
+        ticker = str(await ticker_q.get())
+        result = await get_last_price(ticker)
+        if result:
+            cursor = cnx.cursor()
+            price = result[0]
+            cursor.execute(update_price, (price, ticker))
+            cnx.commit()
+            cursor.close()
+        ticker_q.task_done()
 
 
 def create_database(cursor):
@@ -98,34 +119,29 @@ def create_tables(connection):
     cursor.close()
 
 
-
-def main():
+async def main():
+    number_of_updaters = 10
+    ticker_q = asyncio.Queue(maxsize=50)
     tickers_to_be_updated = (
         "SELECT ticker from tickers "
         "WHERE last_price is NULL "
         "      OR ts < TIME(DATE_SUB(NOW(), INTERVAL 1 MINUTE))"
     )
-    update_price = (
-        "UPDATE tickers SET "
-        "   last_price = %s, "
-        "   ts = TIME(NOW()) "
-        "WHERE ticker = %s"
-    )
+    price_updaters = [asyncio.create_task(price_updater(i, ticker_q)) for i in range(number_of_updaters)]
     cnx = get_db_connection()
     create_tables(cnx)
     while True:
         cursor = cnx.cursor()
         cursor.execute(tickers_to_be_updated)
-        tickers = cursor.fetchall()
-        print("Tickers are: %s" % ','.join([_[0] for _ in tickers]))
-        for (ticker,) in tickers:
-            print(f"Updating ticker: {ticker}")
-            cursor.execute(update_price, (get_last_price(ticker)[0], ticker))
-            cnx.commit()
+        tickers = [_[0] for _ in cursor.fetchall()]
+        cnx.commit()
         cursor.close()
-        time.sleep(1)
+        for ticker in tickers:
+            await ticker_q.put(ticker)
+        await ticker_q.join()
+        await asyncio.sleep(1)
     cnx.close()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
