@@ -5,43 +5,57 @@
         <meta http-equiv="refresh" content="60">
         <title>Portfolio Overview</title>
         <link href="{{ url_for('static', filename='/stylesheets/minimal-table.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ url_for('static', filename='/stylesheets/layout.css') }}" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <h1>Portfolio Overview</h1>
-        <table>
-            <thead>
-                <tr>
-                    {% for col in cols %}
-                        <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in rows %}
-                <tr>
-                    {% for el, col_type in zip(row, col_type) %}
-                        {% if col_type == 'row_header' %}
-                            <th scope="row">{{ el }}</th>
-                        {% elif col_type == 'usd' %}
-                            <td class="usd">{{ el }}</td>
-                        {% elif col_type == 'int' %}
-                            <td class="int">{{ el }}</td>
-                        {% else %}
-                            <td>{{ el }}</td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                <tr>
-                    <th scope="row" colspan="3">Cash</th>
-                    <td class="usd">{{ cash }}</td>
-                </tr>
-                <tr>
-                    <th scope="row" colspan="3">Total</th>
-                    <td class="usd">{{ total }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="box">
+            <div class="status">
+                <h1>Status</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            {% for col in cols %}
+                                <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for el, col_type in zip(row, col_type) %}
+                                {% if col_type == 'row_header' %}
+                                    <th scope="row">{{ el }}</th>
+                                {% elif col_type == 'usd' %}
+                                    <td class="usd">{{ el }}</td>
+                                {% elif col_type == 'int' %}
+                                    <td class="int">{{ el }}</td>
+                                {% else %}
+                                    <td>{{ el }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <th scope="row" colspan="3">Cash</th>
+                            <td class="usd">{{ cash }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="3">Total</th>
+                            <td class="usd">{{ total }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="action">
+                <h1>Action</h1>
+                <div id="buy-sell">
+                    <h2>Buy or Sell</h2>
+                </div>
+                <div id="deposit-withdrawal">
+                    <h2>Diposit or Withdrawal</h2>
+                </div>
+            </div>
+        </div>
         <script>
             var usd_formatter = new Intl.NumberFormat('en-US', {
                 style: 'currency',
