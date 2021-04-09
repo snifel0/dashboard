@@ -45,6 +45,8 @@ class Portfolio:
 
     def ensure_all_tickers_are_registered(self):
         tickers = self.get_tickers()
+        if not tickers:
+            return
         find_registered_tickers = (
             "SELECT ticker from tickers "
             "WHERE ticker in (%s)" % ','.join(['%s'] * len(tickers))
