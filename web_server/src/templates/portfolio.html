@@ -46,16 +46,53 @@
                     </tbody>
                 </table>
             </div>
-            <div class="action">
+            <div class="action glass-morphism">
                 <h1>Action</h1>
-                <div id="buy-sell">
-                    <h2>Buy or Sell</h2>
+                <div class="transaction glass-morphism">
+                    <h2>Transaction</h2>
+                    <div>
+                        <h3>Transaction Type</h3>
+                        <input type="radio" name="transaction" id="buy">
+                        <label for="buy">Buy</label>
+                        <input type="radio" name="transaction" id="sell">
+                        <label for="sell">Sell</label>
+                    </div>
+                    <div>
+                        <h3>Ticker: </h3>
+                        <input type="search" id="ticker">
+                    </div>
+                    <div>
+                        <h3>Shares</h3>
+                        <input type="number" id="shares">
+                    </div>
+                    <div>
+                        <h3>Price Per Share</h3>
+                        <input type="number" id="price-per-share">
+                    </div>
+                    <div>
+                        <input type="submit" onclick="applyTransaction()">
+                    </div>
                 </div>
-                <div id="deposit-withdrawal">
+                <div class="deposit-withdrawal glass-morphism">
                     <h2>Diposit or Withdrawal</h2>
+                    <div>
+                        <h3>Transaction Type</h3>
+                        <input type="radio" name="transaction" id="deposit">
+                        <label for="deposit">Deposit</label>
+                        <input type="radio" name="transaction" id="withdrawal">
+                        <label for="withdrawal">Withdrawal</label>
+                    </div>
+                    <div>
+                        <h3>Amount</h3>
+                        <input type="number">
+                    </div>
+                    <div>
+                        <input type="submit">
+                    </div>
                 </div>
             </div>
         </div>
         <script src="{{ url_for('static', filename='/script/number-formatter.js') }}"></script>
+        <script src="{{ url_for('static', filename='/script/transaction.js') }}"></script>
     </body>
 </html>
