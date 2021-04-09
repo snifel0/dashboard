@@ -31,19 +31,19 @@ function getNewQueryURI(positions, cash) {
     return new_urlParams.toString();
 }
 function applyTransaction() {
-    var myDiv = document.getElementById("debug");
     var [old_positions, old_cash] = getPositions();
     var ticker = document.getElementById("ticker").value;
     var price_per_share = document.getElementById("price-per-share").value;
+    var commission = parseFloat(document.getElementById("commission").value);
     if (document.getElementById("buy").checked) {
         var shares = document.getElementById("shares").value;
     } else if (document.getElementById("sell").checked) {
         var shares = - document.getElementById("shares").value;
     } else {
-        var transaction = "No transaction";
+        return;
     }
     cost = shares * price_per_share;
-    var new_cash = old_cash - cost;
+    var new_cash = old_cash - cost - commission;
     var old_shares = 0;
     var new_positions = [];
     var new_i = 0;
@@ -60,4 +60,16 @@ function applyTransaction() {
         new_positions[new_i] = new Position(ticker, new_shares);
     }
     changeState(getNewQueryURI(new_positions, new_cash));
+}
+function applyCashInOut() {
+    var [old_positions, old_cash] = getPositions();
+    if (document.getElementById("deposit").checked) {
+        var amount = document.getElementById("amount").value;
+    } else if (document.getElementById("withdrawal").checked) {
+        var amount = - document.getElementById("amount").value;
+    } else {
+        return;
+    }
+    var new_cash = parseFloat(old_cash) + parseFloat(amount);
+    changeState(getNewQueryURI(old_positions, new_cash.toString()));
 }
