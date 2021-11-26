@@ -1,5 +1,5 @@
 # dashboard
-A portfolio manager web app
+A portfolio manager web app for my personal study of docker.
 
 ## prerequisite
 You need git and docker installed on your computer.
